@@ -49,26 +49,43 @@ class BilibiliLoader(BaseLoader):
             json.dump(self.number_by_date_dict, f, sort_keys=True)
 
     def get_api_data(self, max_oid="", view_at="", data_list=[]):
+        print("开始获取Bilibili API数据...")
+        url = BILIBILI_HISTORY_URL.format(max_oid=max_oid, view_at=view_at)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Referer": "https://www.bilibili.com/",
+            "Accept": "application/json, text/plain, */*",
+            "Connection": "keep-alive",
+            "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        }
+
         r = self.session.get(
-            BILIBILI_HISTORY_URL.format(max_oid=max_oid, view_at=view_at)
+            url
         )
+
+        print(f"API响应状态码: {r.status_code}")
         if not r.ok:
+            print(f"API响应内容: {r.text}")
             raise LoadError(
                 "Can not get bilibili history data, please check your cookie"
             )
         data = r.json()["data"]
+        print(f"API返回的数据结构: {list(data.keys())}")
         if not data["list"]:
             return data_list
         lst = data["list"]
+        print(f"本次获取到的数据条数: {len(lst)}")
         max_oid = lst[-1]["history"]["oid"]
         view_at = lst[-1]["view_at"]
         data_list.extend(lst)
         # spider rule
-        time.sleep(0.1)
+        time.sleep(2)
         return self.get_api_data(max_oid=max_oid, view_at=view_at, data_list=data_list)
 
     def make_track_dict(self):
+        print("开始处理Bilibili数据...")
         data_list = self.get_api_data()
+        print(f"总共获取到的数据条数: {len(data_list)}")
         new_watch_dict = defaultdict(int)
         for d in data_list:
             date_str = pendulum.from_timestamp(

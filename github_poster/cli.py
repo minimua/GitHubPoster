@@ -18,11 +18,11 @@ OUT_FOLDER = os.path.join(os.getcwd(), "OUT_FOLDER")
 
 
 def run():
+    print("开始执行...")
     """Handle command line arguments and call other modules as needed."""
     p = Poster()
     args_parser = argparse.ArgumentParser()
     subparser = args_parser.add_subparsers()
-
     # temp list to remove the summary type
     temp_list = list(LOADER_DICT.values()).copy()
     temp_list.remove(LOADER_DICT.get("summary"))

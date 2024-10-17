@@ -49,6 +49,7 @@ class WakaTimeLoader(BaseLoader):
             json.dump(self.number_by_date_dict, f, sort_keys=True)
 
     def get_api_data(self):
+        print("开始获取API数据...")
         if self.from_year != self.to_year:
             start_date = f"{self.from_year}-01-01"
             end_date = f"{self.to_year}-12-31"

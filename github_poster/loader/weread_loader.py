@@ -26,19 +26,27 @@ class WereadLoader(BaseLoader):
         )
 
     def get_api_data(self):
+        print("开始获取微信读书API数据...")
         r = self.session.get(WEREAD_HISTORY_URL)
+        print(f"API响应状态码: {r.status_code}")
         if not r.ok:
+            print(f"API响应内容: {r.text}")
             # need to refresh cookie WTF the design!!
             if r.json()["errcode"] == -2012:
+                print("需要刷新cookie，尝试重新获取...")
                 self.session.get(WEREAD_BASE_URL)
                 r = self.session.get(WEREAD_HISTORY_URL)
+                print(f"刷新后的API响应状态码: {r.status_code}")
             else:
                 raise Exception("Can not get weread history data")
         return r.json()
 
     def make_track_dict(self):
+        print("开始处理微信读书数据...")
         api_data = self.get_api_data()
+        print(f"API返回的数据结构: {list(api_data.keys())}")
         month_data = api_data["datas"]
+        print(f"获取到的月度数据数量: {len(month_data)}")
         for m in month_data:
             m_start_date = pendulum.from_timestamp(
                 m["baseTimestamp"], tz=self.time_zone
