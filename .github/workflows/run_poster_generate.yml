@@ -9,7 +9,7 @@ env:
   # please change to your own config.
   # this actions generate only this year
   # If you fork this please change the type to yours below
-  TYPE: "weread, leetcode, wakatime" # support strava/gpx/ns/cichang/shanbay/duolingo/issue/leetcode/github/gitlab/kindle/bilibili/wakatime/dota2/forest, Please change the 'pass' it to your own separated by commas
+  TYPE: "weread, leetcode, wakatime, duolingo, chatgpt" # support strava/gpx/ns/cichang/shanbay/duolingo/issue/leetcode/github/gitlab/kindle/bilibili/wakatime/dota2/forest, Please change the 'pass' it to your own separated by commas
   ME: Lil_Amu
 
 jobs:
@@ -115,6 +115,11 @@ jobs:
         run: |
           python -m github_poster weread --weread_cookie "${{ secrets.WEREAD_COOKIE }}" --me ${{ env.ME }}
 
+      - name: Run sync chatgpt script
+        if: contains(env.TYPE, 'chatgpt')
+        run: |
+          python -m github_poster chatgpt --me ${{ env.ME }}
+
       # change the types to yours
       - name: Run sync multiple script
         if: contains(env.TYPE, 'multiple')
@@ -123,7 +128,7 @@ jobs:
 
       - name: Mv svg files to examples
         # only for me to show
-        if: github.repository_owner == 'yihong0618'
+        if: github.repository_owner == 'minimua'
         run: mv OUT_FOLDER/*.svg examples/
 
       - name: Push new postger
